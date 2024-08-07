@@ -3,11 +3,16 @@ import { Paper } from '@mui/material';
 import {
   Scheduler,
   DayView,
+  WeekView,
+  MonthView,
   Appointments,
   AppointmentForm,
   AppointmentTooltip,
   EditRecurrenceMenu,
   AllDayPanel,
+  Toolbar,
+  ViewSwitcher,
+  DateNavigator,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import {
   ViewState,
@@ -30,10 +35,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const currentDate = new Date().toISOString().split('T')[0];
-
 function App() {
   const [appointments, setAppointments] = useState([]);
+  const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
     fetchAppointments();
@@ -51,7 +55,7 @@ function App() {
       }));
       setAppointments(appointmentsList);
     } catch (error) {
-      console.error("Błąd:", error);
+      console.error("Błąd podczas pobierania spotkań:", error);
     }
   };
 
@@ -103,11 +107,18 @@ function App() {
         locale="pl-PL"
         messages={plLocale}
       >
-        <ViewState currentDate={currentDate} />
+        <ViewState
+          currentDate={currentDate}
+          onCurrentDateChange={setCurrentDate}
+        />
         <EditingState onCommitChanges={handleChanges} />
         <IntegratedEditing />
-
+        <Toolbar />
+        <DateNavigator />
+        <ViewSwitcher />
         <DayView startDayHour={9} endDayHour={18} />
+        <WeekView startDayHour={9} endDayHour={18} />
+        <MonthView />
         <AllDayPanel />
         <EditRecurrenceMenu />
         <Appointments />
